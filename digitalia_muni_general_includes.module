@@ -1,0 +1,9 @@
+<?php
+
+function digitalia_muni_general_includes_page_attachments(array &$attachments) {
+
+  $attachments['#attached']['library'][] = 'digitalia_muni_general_includes/language_switcher';
+
+}
+
+?>

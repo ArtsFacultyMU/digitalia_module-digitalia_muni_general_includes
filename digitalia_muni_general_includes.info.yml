@@ -1,0 +1,5 @@
+name: General Javascript and CSS includes
+type: module
+description: 'Javascript and CSS includes used over all of the Digitalia platforms'
+package: custom
+core_version_requirement: ^8 || ^9 || ^10
