@@ -1,5 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
-  const links = document.querySelectorAll("#block-languageswitcher a");
+  let links = document.querySelectorAll("#block-islandora-muni-languageswitcher a");
+
+  // arnenovak and cinematicbrno have different block id
+  if (!links) {
+    links = document.querySelectorAll("#block-languageswitcher a");
+  }
 
   links.forEach(link => {
     let url = new URL(link.href); 
