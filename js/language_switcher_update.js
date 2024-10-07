@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
   let links = document.querySelectorAll("#block-islandora-muni-languageswitcher a");
 
-  // arnenovak and cinematicbrno have different block id
-  if (!links) {
+  // arnenovak cinematicbrno and digilib have different block id
+  if (links.length == 0) {
     links = document.querySelectorAll("#block-languageswitcher a");
   }
 
