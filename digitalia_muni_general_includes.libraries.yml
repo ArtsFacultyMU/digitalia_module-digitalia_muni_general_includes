@@ -1,3 +1,4 @@
 language_switcher:
   js:
     js/language_switcher_update.js: {}
+    js/digitalia_link_translate.js: {}
