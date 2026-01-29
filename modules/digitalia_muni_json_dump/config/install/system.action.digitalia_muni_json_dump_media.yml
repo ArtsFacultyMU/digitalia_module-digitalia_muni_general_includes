@@ -1,0 +1,6 @@
+langcode: en
+status: true
+id: digitalia_muni_json_dump_media
+label: "Create JSON dump (media)"
+type: media
+plugin: digitalia_muni_json_dump_media

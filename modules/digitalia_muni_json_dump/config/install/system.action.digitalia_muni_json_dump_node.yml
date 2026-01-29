@@ -1,0 +1,6 @@
+langcode: en
+status: true
+id: digitalia_muni_json_dump_node
+label: "Create JSON dump (node)"
+type: node
+plugin: digitalia_muni_json_dump_node
