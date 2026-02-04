@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\digitalia_muni_general_includes\Plugin\Action;
+namespace Drupal\digitalia_muni_json_dump\Plugin\Action;
 
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
