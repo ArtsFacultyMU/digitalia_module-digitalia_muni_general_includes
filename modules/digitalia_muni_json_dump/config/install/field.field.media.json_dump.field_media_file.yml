@@ -1,0 +1,37 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_media_file
+    - media.type.json_dump
+  module:
+    - content_translation
+    - file
+    - filehash
+third_party_settings:
+  filehash:
+    dedupe: 0
+    dedupe_original: false
+  content_translation:
+    translation_sync:
+      target_id: target_id
+      display: display
+      description: description
+id: media.json_dump.field_media_file
+field_name: field_media_file
+entity_type: media
+bundle: json_dump
+label: File
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: json-dump
+  file_extensions: json
+  max_filesize: ''
+  description_field: false
+field_type: file
