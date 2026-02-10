@@ -4,6 +4,7 @@ namespace Drupal\digitalia_muni_json_dump\Plugin\Action;
 
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\media\Entity\Media;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -53,11 +54,14 @@ abstract class JsonDumpActionBase extends ActionBase {
     $props = ["field_reference_{$entity_type}" => $id];
     $existing_dumps = \Drupal::entityTypeManager()->getStorage("media")->loadByProperties($props);
 
-    if (empty($existing_dumps)) {
-      return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
-    }
+    //if (empty($existing_dumps)) {
+    //  return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
+    //}
 
-    return $this->rewriteExistingDumpMedia($existing_dumps, $id, $json_file_id, $file_name);
+    // Always create new media (TODO: name them differently)
+    return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
+
+    //return $this->rewriteExistingDumpMedia($existing_dumps, $id, $file_name, $json_file_id);
   }
 
   protected function saveToFile($json, $dest_dir_uri, $file_name) {
@@ -68,15 +72,21 @@ abstract class JsonDumpActionBase extends ActionBase {
       return FALSE;
     }
 
-    if (!\Drupal::service("file_system")->saveData($json, $file_uri, FileSystemInterface::EXISTS_REPLACE)) {
-		  $this->logger->error("Could not create file at: {$file_uri}");
+		$this->logger->debug("file_uri: {$file_uri}");
+
+    $file_uri = \Drupal::service("file_system")->saveData($json, $file_uri, FileExists::Rename);
+    if (!$file_uri) {
+		  $this->logger->error("Could not create file at: {$dest_dir_uri}/{$file_name}");
       return FALSE;
     }
+		$this->logger->debug("file_uri: {$file_uri}");
 
     $json_file = File::create(["uri" => $file_uri]);
     $json_file->setOwnerId(1);
     $json_file->setPermanent();
     $json_file->save();
+
+		$this->logger->debug("json_file->id(): {$json_file->id()}");
     
     return $json_file->id();
   }
@@ -105,13 +115,22 @@ abstract class JsonDumpActionBase extends ActionBase {
     return $json_dump_media->save();
   }
 
-  protected function rewriteExistingDumpMedia($existing_dumps, $entity_id, $json_file_id, $file_name) {
+  /**
+   * Rewriting causes the file to be visible to everyone? Yes, original file is no longer referenced
+   * from any media, therefore it can't inherit permission checks
+   */
+  protected function rewriteExistingDumpMedia($existing_dumps, $entity_id, $file_name, $json_file_id) {
     if (count($existing_dumps) > 1) {
       $entity_type = $this->getPluginDefinition()["type"];
       $this->logger->warning("{$entity_type} {$entity_id} has more than one JSON dump media!");
     }
     // TODO: Do we want to rewrite existing media? If yes, maybe do some more sophisticated selection
-    $existing_dumps[array_keys($existing_dumps)[0]]->set("field_media_file", ["target_id" => $json_file_id, "title" => $file_name]);
+    //$this->logger->debug(print_r($existing_dumps[array_keys($existing_dumps)[0]]->get("field_media_file")->getValue(), TRUE));
+    $existing_dumps[array_keys($existing_dumps)[0]]->set("field_media_file", [
+            "target_id" => $json_file_id,
+            "display" => "",
+            "description" => "",
+    ]);
     return $existing_dumps[array_keys($existing_dumps)[0]]->save();
   }
 
