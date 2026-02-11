@@ -54,14 +54,11 @@ abstract class JsonDumpActionBase extends ActionBase {
     $props = ["field_reference_{$entity_type}" => $id];
     $existing_dumps = \Drupal::entityTypeManager()->getStorage("media")->loadByProperties($props);
 
-    //if (empty($existing_dumps)) {
-    //  return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
-    //}
+    if (empty($existing_dumps)) {
+      return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
+    }
 
-    // Always create new media (TODO: name them differently)
-    return $this->createJsonDumpMedia($entity_type, $id, $file_name, $json_file_id);
-
-    //return $this->rewriteExistingDumpMedia($existing_dumps, $id, $file_name, $json_file_id);
+    return $this->rewriteExistingDumpMedia($existing_dumps, $id, $file_name, $json_file_id);
   }
 
   protected function saveToFile($json, $dest_dir_uri, $file_name) {
@@ -74,7 +71,7 @@ abstract class JsonDumpActionBase extends ActionBase {
 
 		$this->logger->debug("file_uri: {$file_uri}");
 
-    $file_uri = \Drupal::service("file_system")->saveData($json, $file_uri, FileExists::Rename);
+    $file_uri = \Drupal::service("file_system")->saveData($json, $file_uri, FileExists::Replace);
     if (!$file_uri) {
 		  $this->logger->error("Could not create file at: {$dest_dir_uri}/{$file_name}");
       return FALSE;
@@ -117,20 +114,29 @@ abstract class JsonDumpActionBase extends ActionBase {
 
   /**
    * Rewriting causes the file to be visible to everyone? Yes, original file is no longer referenced
-   * from any media, therefore it can't inherit permission checks
+   * from any media, therefore it can't inherit permission checks.
+   * Removing file entity from Drupal only works
    */
   protected function rewriteExistingDumpMedia($existing_dumps, $entity_id, $file_name, $json_file_id) {
     if (count($existing_dumps) > 1) {
       $entity_type = $this->getPluginDefinition()["type"];
       $this->logger->warning("{$entity_type} {$entity_id} has more than one JSON dump media!");
     }
-    // TODO: Do we want to rewrite existing media? If yes, maybe do some more sophisticated selection
-    //$this->logger->debug(print_r($existing_dumps[array_keys($existing_dumps)[0]]->get("field_media_file")->getValue(), TRUE));
+
+    // Delete original file only from drupal (the uri stays the same, versioning is left up to fedora)
+    $original_id = $existing_dumps[array_keys($existing_dumps)[0]]->get("field_media_file")->getValue()[0]["target_id"];
+    $props = ["fid" => $original_id];
+    $file_query= \Drupal::entityTypeManager()->getStorage("file")->loadByProperties($props);
+    $original_file = $file_query[array_keys($file_query)[0]];
+    $this->logger->debug(print_r($original_file, TRUE));
+    $original_file->setFileUri("");
+    $original_file->delete();
+
     $existing_dumps[array_keys($existing_dumps)[0]]->set("field_media_file", [
             "target_id" => $json_file_id,
-            "display" => "",
-            "description" => "",
+            "title" => $file_name,
     ]);
+
     return $existing_dumps[array_keys($existing_dumps)[0]]->save();
   }
 
