@@ -7,8 +7,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 
 /**
  * Provides JSON dump for media.
- * TODO: create json_dump media as a module install configuration
- * TODO: create view as a module install configuration
  *
  * @Action(
  *	 id = "digitalia_muni_json_dump_media",
