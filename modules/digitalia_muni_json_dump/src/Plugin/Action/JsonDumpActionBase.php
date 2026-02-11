@@ -69,22 +69,17 @@ abstract class JsonDumpActionBase extends ActionBase {
       return FALSE;
     }
 
-		$this->logger->debug("file_uri: {$file_uri}");
-
     $file_uri = \Drupal::service("file_system")->saveData($json, $file_uri, FileExists::Replace);
     if (!$file_uri) {
 		  $this->logger->error("Could not create file at: {$dest_dir_uri}/{$file_name}");
       return FALSE;
     }
-		$this->logger->debug("file_uri: {$file_uri}");
 
     $json_file = File::create(["uri" => $file_uri]);
     $json_file->setOwnerId(1);
     $json_file->setPermanent();
     $json_file->save();
 
-		$this->logger->debug("json_file->id(): {$json_file->id()}");
-    
     return $json_file->id();
   }
 
@@ -128,7 +123,6 @@ abstract class JsonDumpActionBase extends ActionBase {
     $props = ["fid" => $original_id];
     $file_query= \Drupal::entityTypeManager()->getStorage("file")->loadByProperties($props);
     $original_file = $file_query[array_keys($file_query)[0]];
-    $this->logger->debug(print_r($original_file, TRUE));
     $original_file->setFileUri("");
     $original_file->delete();
 
