@@ -1,0 +1,24 @@
+<?php
+
+use \Drupal\Core\Entity\EntityInterface;
+
+
+function digitalia_muni_json_dump_entity_update(EntityInterface $entity) {
+  execute_dump_action($entity);
+}
+
+function digitalia_muni_json_dump_entity_insert(EntityInterface $entity) {
+  execute_dump_action($entity);
+}
+
+function execute_dump_action(EntityInterface $entity) {
+  $type = $entity->getEntityType()->id();
+
+  // TODO: should entity types be configurable?
+  if (in_array($type, ["node", "media", "taxonomy_term", "user"])) {
+    $manager = \Drupal::service("plugin.manager.action");
+    $action = $manager->createInstance("digitalia_muni_json_dump_{$type}");
+    $action->execute($entity);
+  }
+
+}
