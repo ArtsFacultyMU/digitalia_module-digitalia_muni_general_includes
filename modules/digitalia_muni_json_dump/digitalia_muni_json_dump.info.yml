@@ -4,7 +4,7 @@ description: 'JSON dump actions for content, media, users and taxonomy'
 package: Digitalia
 core_version_requirement: ^10
 dependencies:
-  - drupal: node
-  - drupal: media
-  - drupal: user
-  - drupal: taxonomy
+  - drupal:node
+  - drupal:media
+  - drupal:user
+  - drupal:taxonomy
