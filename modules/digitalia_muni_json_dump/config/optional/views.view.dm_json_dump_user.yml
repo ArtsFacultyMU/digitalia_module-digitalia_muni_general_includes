@@ -2,18 +2,17 @@ langcode: en
 status: true
 dependencies:
   module:
-    - media
     - rest
     - serialization
     - user
     - views_data_export
-id: dev_json_dump_media
-label: '**DEV json dump media**'
+id: dm_json_dump_user
+label: '**DM json dump user**'
 module: views
 description: ''
 tag: ''
-base_table: media_field_data
-base_field: mid
+base_table: users_field_data
+base_field: uid
 display:
   default:
     id: default
@@ -24,13 +23,13 @@ display:
       fields:
         name:
           id: name
-          table: media_field_data
+          table: users_field_data
           field: name
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: media
-          entity_field: media
+          entity_type: user
+          entity_field: name
           plugin_id: field
           label: ''
           exclude: false
@@ -56,9 +55,8 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: true
+          type: user_name
+          settings: {  }
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -101,21 +99,21 @@ display:
       access:
         type: perm
         options:
-          perm: 'view media'
+          perm: 'access user profiles'
       cache:
         type: tag
         options: {  }
       empty: {  }
       sorts:
-        bundle:
-          id: bundle
-          table: media_field_data
-          field: bundle
+        uid:
+          id: uid
+          table: users_field_data
+          field: uid
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: media
-          entity_field: bundle
+          entity_type: user
+          entity_field: uid
           plugin_id: standard
           order: ASC
           expose:
@@ -123,17 +121,17 @@ display:
             field_identifier: ''
           exposed: false
       arguments:
-        mid:
-          id: mid
-          table: media_field_data
-          field: mid
+        uid:
+          id: uid
+          table: users_field_data
+          field: uid
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: media
-          entity_field: mid
-          plugin_id: numeric
-          default_action: 'not found'
+          entity_type: user
+          entity_field: uid
+          plugin_id: user_uid
+          default_action: empty
           exception:
             value: all
             title_enable: false
@@ -204,6 +202,7 @@ display:
       style:
         type: data_export
         options:
+          uses_fields: false
           formats:
             json: json
           csv_settings:
@@ -225,7 +224,7 @@ display:
         type: data_entity
         options: {  }
       display_extenders: {  }
-      path: dev/export/media/%media
+      path: dev/export/user/%user
       filename: ''
       automatic_download: false
       store_in_public_file_directory: null

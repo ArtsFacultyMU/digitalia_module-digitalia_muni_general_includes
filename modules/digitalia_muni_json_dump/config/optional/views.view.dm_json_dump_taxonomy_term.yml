@@ -7,8 +7,8 @@ dependencies:
     - taxonomy
     - user
     - views_data_export
-id: dev_json_dump_taxonomy_term
-label: '**DEV json dump taxonomy term**'
+id: dm_json_dump_taxonomy_term
+label: '**DM json dump taxonomy term**'
 module: views
 description: ''
 tag: ''

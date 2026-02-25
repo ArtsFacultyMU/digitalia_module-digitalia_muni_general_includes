@@ -44,7 +44,7 @@ abstract class JsonDumpActionBase extends ActionBase {
     $dest_dir_uri = "fedora://json-dump/{$entity_type}";
     $file_name = "{$entity_type}_{$id}.json";
 
-    $json = $this->getRenderedViewMarkup("dev_json_dump_{$entity_type}", "data_export_1", $id);
+    $json = $this->getRenderedViewMarkup("dm_json_dump_{$entity_type}", "data_export_1", $id);
     $json_file_id = $this->saveToFile($json, $dest_dir_uri, $file_name);
 
     if (!$json_file_id) {
