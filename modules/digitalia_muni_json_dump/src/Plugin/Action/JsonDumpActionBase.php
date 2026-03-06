@@ -64,7 +64,7 @@ abstract class JsonDumpActionBase extends ActionBase {
   protected function saveToFile($json, $dest_dir_uri, $file_name) {
     $file_uri = "{$dest_dir_uri}/{$file_name}";
 
-    if (!\Drupal::service("file_system")->prepareDirectory($dest_dir_uri, FileSystemInterface::CREATE_DIRECTORY)) {
+    if (!\Drupal::service("file_system")->prepareDirectory($dest_dir_uri, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
 		  $this->logger->error("Could not prepare directory at: {$dest_dir_uri}");
       return FALSE;
     }
