@@ -43,8 +43,40 @@ abstract class JsonDumpActionBase extends ActionBase {
     $entity_type = $this->getPluginDefinition()["type"];
     $dest_dir_uri = "fedora://json-dump/{$entity_type}";
     $file_name = "{$entity_type}_{$id}.json";
+    $module_handler = \Drupal::service('module_handler');
+    $serializer = \Drupal::service("serializer");
 
     $json = $this->getRenderedViewMarkup("dm_json_dump_{$entity_type}", "data_export_1", $id);
+
+    // Add relationships to dump
+    if ($module_handler->moduleExists("group")) {
+      $decoded = json_decode($json, TRUE);
+      $relationships = \Drupal::entityTypeManager()->getStorage("group_relationship")->loadByProperties(["entity_id" => $id]);
+
+      $relationships_serialized = array();
+
+      foreach ($relationships as $relationship) {
+        $relationship_bundle = array_pop(explode(":", $relationship->get("plugin_id")->getValue()[0]["value"]));
+
+        // Other entities should be ok (nodes are for sure)
+        if ($relationship_bundle == "group_membership") {
+          $relationship_bundle = "user";
+        }
+
+        $tmp_array = json_decode($serializer->serialize($relationship, "json"), TRUE);
+
+        // We want only relationships for the same entity type as input entity
+        // For the rare case when for example a taxonomy term with same id as node is also a member of a group
+        if ($entity->bundle() == $relationship_bundle) {
+          array_push($relationships_serialized, json_decode($serializer->serialize($relationship, "json"), TRUE));
+        }
+      }
+
+      $decoded = array_merge($decoded, $relationships_serialized);
+
+      $json = json_encode($decoded);
+    }
+
     $json_file_id = $this->saveToFile($json, $dest_dir_uri, $file_name);
 
     if (!$json_file_id) {
