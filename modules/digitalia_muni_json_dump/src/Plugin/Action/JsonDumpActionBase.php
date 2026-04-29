@@ -62,11 +62,11 @@ abstract class JsonDumpActionBase extends ActionBase {
     #$json = $serializer->serialize($entity, "json");
     #$time_end = hrtime(true);
 
-    #$time_start = hrtime(true);
-    #$json_array = $serializer->normalize($entity);
-
     $time_start = hrtime(true);
-    $json = $this->getRenderedViewMarkup("dm_json_dump_{$entity_type}", "data_export_1", $id);
+    $json_array = $serializer->normalize($entity);
+
+    #$time_start = hrtime(true);
+    #$json = $this->getRenderedViewMarkup("dm_json_dump_{$entity_type}", "data_export_1", $id);
 
     #$time_start = hrtime(true);
     #$json = $this->getRenderedViewMarkup("dm_json_dump_{$entity_type}", "data_export_1", $id);
@@ -89,7 +89,7 @@ abstract class JsonDumpActionBase extends ActionBase {
     // Add relationships to dump
     if ($module_handler->moduleExists("group")) {
       #$decoded = json_decode($json, TRUE);
-      $json_array = json_decode($json, TRUE);
+      #$json_array = json_decode($json, TRUE);
       $relationships = \Drupal::entityTypeManager()->getStorage("group_relationship")->loadByProperties(["entity_id" => $id]);
 
       $relationships_serialized = array();
@@ -112,10 +112,10 @@ abstract class JsonDumpActionBase extends ActionBase {
       }
 
       $json_array = array_merge($json_array, $relationships_serialized);
-      $json = json_encode($json_array);
+      #$json = json_encode($json_array);
     }
 
-    #$json = json_encode($json_array);
+    $json = json_encode($json_array);
     $time_end = hrtime(true);
     $time_elapsed = ($time_end-$time_start)/1000000;
     \Drupal::logger("TIMING_DEBUG_END_VIEW")->debug("{$entity->id()}: {$time_elapsed}");
