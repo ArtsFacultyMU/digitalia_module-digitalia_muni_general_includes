@@ -1,0 +1,6 @@
+langcode: en
+status: true
+id: digitalia_muni_json_dump_taxonomy_term
+label: "Create JSON dump (taxonomy_term)"
+type: taxonomy_term
+plugin: digitalia_muni_json_dump_taxonomy_term
